@@ -1,2 +1,1 @@
-# AIDE
-AIDE_PROGRAM
+#AIDE悬浮窗直装模板项目例子
