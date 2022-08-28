@@ -1,0 +1,383 @@
+package com.answer.PNMODUI.UI.Menu.Mod;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.ScrollView;
+import android.widget.*;
+import android.view.MotionEvent;
+import android.os.Handler;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
+import android.view.animation.Interpolator;
+
+public class World {
+    private static boolean is = false;
+    private static Context context;
+	private static PopupWindow mainpop;
+    private static LinearLayout mainll;
+    private static LinearLayout mainll2;
+    private static LinearLayout mainll3;
+    private static  boolean canmovePop = false;
+    private static float X;
+    private static float Y;
+    private static LinearLayout gui1_6;
+    private static LinearLayout gui1_7;
+    private  static boolean UI1Boolean=false;
+    private static LinearLayout MainUI;
+
+    private static TextView maintv;
+
+    private static ScrollView gui1_8;
+
+    private static LinearLayout gui1_9;
+
+    //private static int[] Interpolators=new int[]{android.view.animation.LinearInterpolator,android.view.animation.AccelerateDecelerateInterpolator,android.view.animation.AccelerateInterpolator,android.view.animation.AnticipateInterpolator,android.view.animation.AnticipateOvershootInterpolator,android.view.animation.BounceInterpolator,android.view.animation.DecelerateInterpolator,android.view.animation.OvershootInterpolator};
+
+
+    public static void show(Context ct){
+
+	    context = ct;
+
+
+
+        final int[] mib={Color.parseColor("#FFFFFF"),Color.parseColor("#FFFFFF")};
+        final float[] mif={10,10,10,10,10,10,10,10};
+        final float[] mif2={10,10,10,10,0,0,0,0};
+        MainUI = new LinearLayout(context);
+        MainUI.setOrientation(1);
+
+        mainll=ASUI.NewView(context,(int)(W()*0.25),(int)(H()*0.12),"CC",0,0,null,null);
+	    mainll.setBackgroundDrawable(ASUI.roundBG(mib,mif,null,0));
+        mainll.setElevation(1);
+
+        int[] mib1={Color.parseColor("#465EFB"),Color.parseColor("#C2FFD8")};
+        float[] mif1={0,0,99,99,99,99,99,99};
+
+        mainll2=ASUI.NewView(context,(int)(H()*0.05),(int)(H()*0.05),"CC",0,0,null,null);
+        mainll2.setBackgroundDrawable(ASUI.roundBG(mib1,mif1,"LR",0));
+
+        mainll3=ASUI.NewView(context,(int)(W()*0.18),(int)(H()*0.12),"CC",0,0,null,null);
+        mainll3.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
+        maintv=ASUI.NewText(context,"Move","CC",20,null);
+
+
+        MainUI.addView(mainll);
+        mainll.addView(mainll2);
+        mainll.addView(mainll3);
+        mainll3.addView(maintv);
+        mainpop=ASUI.NewPW(MainUI,(int)(W() * 0.25),-2,false,true,true,"CC",null,0,0);
+        mainll.setOnClickListener(new View.OnClickListener() {
+
+
+
+                @Override
+                public void onClick(View view) {
+                    if(UI1Boolean == false){
+                        mainll.setBackgroundDrawable(ASUI.roundBG(mib,mif2,null,0));
+						//  gui1_6.setBackgroundDrawable(ASUI.roundBG(mib,mif,null,0));
+                        MainUI.addView(UIS1());
+                        UI1Boolean = true;
+
+                    }else{
+                        mainll.setBackgroundDrawable(ASUI.roundBG(mib,mif,null,0));
+						// gui1_6.setBackgroundDrawable(ASUI.roundBG(mib,mif,null,0));
+                        DismissGui(gui1_6,gui1_7,2000);
+
+                        UI1Boolean = false;
+
+                    }
+
+                }
+            });
+
+        X = 0.0f;
+        mainpop.update(0,0,-1,-1);
+        Y = 0.0f;
+        mainll.setOnLongClickListener(new View.OnLongClickListener() {
+
+                @Override
+                public boolean onLongClick(View view) {
+                    canmovePop = true;
+                    return false;
+                }
+            });
+        mainll.setOnTouchListener(new View.OnTouchListener(){
+                private float lastX; //上一次位置的X.Y坐标
+                private float lastY;
+                private float nowX;  //当前移动位置的X.Y坐标
+                private float nowY;
+                private float tranX; //悬浮窗移动位置的相对值
+                private float tranY;
+
+
+
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+                    int action = event.getAction();
+
+                    if (action == MotionEvent.ACTION_DOWN) {
+                        //点击
+                        lastX = event.getRawX();
+                        lastY = event.getRawY();
+                    } else if (action == MotionEvent.ACTION_UP) {
+                        //松开  
+                        if (!canmovePop){
+
+
+                        }
+                        canmovePop = false;
+                    } else if (action == MotionEvent.ACTION_MOVE && canmovePop) {
+                        //移动
+                        nowX = event.getRawX();
+                        nowY = event.getRawY();
+                        // 计算XY坐标偏移量
+                        tranX = nowX - lastX;
+                        tranY = nowY - lastY;
+                        X += tranX;
+                        Y += tranY;
+                        mainpop.update(Math.round(X),Math.round(Y),-1,-1);
+                        lastX = nowX;
+                        lastY = nowY;
+
+                    }
+                    return false;
+                }
+            });
+
+    }
+
+    public static void DismissGui(final View view,final View views,int time){
+
+        UIPlumb(view,0,-100,300,0);
+        UIPlumb(views,0,100,300,0);
+
+        new Handler().postDelayed(new Runnable(){
+
+                @Override
+                public void run() {
+                    view.setLayoutParams(new LinearLayout.LayoutParams(0,0));
+
+
+                }
+            }, time);
+	};
+
+    public static AnimationSet UIMove(View view,int x1,int x2,int y1,int y2,int time,int type){
+        int tp=(type==0?Animation.RELATIVE_TO_SELF:type==1?Animation.RELATIVE_TO_PARENT:Animation.ABSOLUTE);
+        AnimationSet aset_4=new AnimationSet(true);
+        TranslateAnimation aa_4=new TranslateAnimation(tp,(int)(x1*0.01),tp,(int)(x2*0.01),tp,(int)(y1*0.01),tp,(int)(y2*0.01));
+        aa_4.setDuration(2000);
+        aset_4.addAnimation(aa_4);
+        view.startAnimation(aset_4);
+        return aset_4;
+    }
+
+    public static RotateAnimation UIRotate(View view,int A,int B,int x,int y,int time,/*int ints*/int type){
+
+
+		int tp=(type==0?android.view.animation.Animation.RELATIVE_TO_SELF:type==1?android.view.animation.Animation.RELATIVE_TO_PARENT:android.view.animation.Animation.ABSOLUTE);
+        RotateAnimation anim=new android.view.animation.RotateAnimation(A, B, tp, (int)(x * 0.01), tp, (int)(y * 0.01));
+
+		// anim.setInterpolator(dhz);
+        anim.setDuration(time);
+		anim.setFillAfter(true);
+		view.startAnimation(anim);
+		return anim;
+    }
+
+    public static AnimationSet UIPlumb(View view,int In,int out,int time,int type){
+        return UIMove(view,0,0,In,out,time,type);
+    };
+
+    public static boolean btu=false;
+
+    public static LinearLayout UIS1(){
+
+        final int[] mib={Color.parseColor("#FFFFFF"),Color.parseColor("#FFFFFF")};
+        final float[] mif={10,10,10,10,10,10,10,10};
+
+
+		final int[] USC={Color.parseColor("#FFFFFF"),Color.parseColor("#FFFFFF")};
+		final float[] USCF={0,0,0,0,10,10,10,10};
+        gui1_6=ASUI.NewView(context,(int)(W()*0.25),(int)(H()*0.5),"CC",1,0,null,null);
+        gui1_6.setBackgroundDrawable(ASUI.roundBG(mib,mif,null,0));
+        gui1_7=ASUI.NewView(context,(int)(W()*0.25),(int)(H()*0.5),"CC",1,0,null,null);
+        gui1_7.setBackgroundDrawable(ASUI.roundBG(mib,mif,null,0));
+        gui1_8=ASUI.NewViewSV(context,(int)(W()*0.25),(int)(H()*0.5),0,null,null);
+        gui1_9=ASUI.NewView(context,(int)(W()*0.25),(int)(H()*0.5),"CC",1,0,null,null);
+        new Handler().postDelayed(new Runnable(){
+
+                @Override
+                public void run() {
+                    gui1_6.setBackgroundDrawable(ASUI.roundBG(USC,USCF,null,0));
+
+                }
+            }, 1200);
+
+		//   DismissGui(gui1_6,gui1_7,1800);
+        UI1Boolean = false;
+
+
+
+
+		final int[] btc={Color.parseColor("#465EFB"),Color.parseColor("#ffffff")};
+        final float[] btf={360,360,360,360,360,360,360,360};
+
+        final int[] btc2={Color.parseColor("#465EFB"),Color.parseColor("#000000")};
+
+
+
+
+
+
+
+        UIPlumb(gui1_6,-100,0,300,0);
+        UIPlumb(gui1_7,100,0,300,0);
+        gui1_6.addView(gui1_7);
+        gui1_7.addView(gui1_8);
+        gui1_8.addView(gui1_9);
+        final Button bt1=ASUI.NewButton(context,"循环跳跃[OFF]",(int)(W()*0.24),(int)(H()*0.12));
+        final Button bt2=ASUI.NewButton(context,"人物变速[OFF]",(int)(W()*0.24),(int)(H()*0.12));
+        final Button bt3=ASUI.NewButton(context,"飞行变速[OFF]",(int)(W()*0.24),(int)(H()*0.12));
+        final Button bt4=ASUI.NewButton(context,"人物飞行[OFF]",(int)(W()*0.24),(int)(H()*0.12));
+        final Button bt5=ASUI.NewButton(context,"人物穿墙[OFF]",(int)(W()*0.24),(int)(H()*0.12));
+
+        gui1_9.addView(bt1);
+        gui1_9.addView(ASUI.Space(context,(int)(W()),(int)(H()*0.03)));
+        gui1_9.addView(bt2);
+        gui1_9.addView(ASUI.Space(context,(int)(W()),(int)(H()*0.03)));
+        gui1_9.addView(bt3);
+        gui1_9.addView(ASUI.Space(context,(int)(W()),(int)(H()*0.03)));
+        gui1_9.addView(bt4);
+        gui1_9.addView(ASUI.Space(context,(int)(W()),(int)(H()*0.03)));
+        gui1_9.addView(bt5);
+
+        bt1.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if(!btu){
+                        btu=true;
+                        bt1.setText("循环跳跃[ON]");
+                        bt1.setBackgroundDrawable(ASUI.roundBG(btc2,btf,null,0));
+						Toast toast = Toast.makeText(context, "循环跳跃[开]", Toast.LENGTH_LONG);
+					    toast.show();
+					}else{
+                        btu=false;
+                        bt1.setText("循环跳跃[OFF]");
+                        bt1.setBackgroundDrawable(ASUI.roundBG(btc,btf,null,0));
+						Toast toast = Toast.makeText(context, "循环跳跃[关]", Toast.LENGTH_LONG);
+					    toast.show();
+					}
+
+                }
+            });
+		bt2.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if(!btu){
+                        btu=true;
+                        bt2.setText("人物变速[ON]");
+                        bt2.setBackgroundDrawable(ASUI.roundBG(btc2,btf,null,0));
+						Toast toast = Toast.makeText(context, "人物变速[开]", Toast.LENGTH_LONG);
+					    toast.show();
+					}else{
+                        btu=false;
+                        bt2.setText("人物变速[OFF]");
+                        bt2.setBackgroundDrawable(ASUI.roundBG(btc,btf,null,0));
+						Toast toast = Toast.makeText(context, "人物变速[关]", Toast.LENGTH_LONG);
+					    toast.show();
+					}
+
+                }
+            });
+		bt3.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if(!btu){
+                        btu=true;
+                        bt3.setText("飞行变速[ON]");
+                        bt3.setBackgroundDrawable(ASUI.roundBG(btc2,btf,null,0));
+						Toast toast = Toast.makeText(context, "飞行变速[开]", Toast.LENGTH_LONG);
+					    toast.show();
+					}else{
+                        btu=false;
+                        bt3.setText("飞行变速[OFF]");
+                        bt3.setBackgroundDrawable(ASUI.roundBG(btc,btf,null,0));
+						Toast toast = Toast.makeText(context, "飞行变速[关]", Toast.LENGTH_LONG);
+					    toast.show();
+					}
+
+                }
+            });
+		bt4.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if(!btu){
+                        btu=true;
+                        bt4.setText("人物飞行[ON]");
+                        bt4.setBackgroundDrawable(ASUI.roundBG(btc2,btf,null,0));
+						Toast toast = Toast.makeText(context, "人物飞行[开]", Toast.LENGTH_LONG);
+					    toast.show();
+					}else{
+                        btu=false;
+                        bt4.setText("人物飞行[OFF]");
+                        bt4.setBackgroundDrawable(ASUI.roundBG(btc,btf,null,0));
+						Toast toast = Toast.makeText(context, "人物飞行[关]", Toast.LENGTH_LONG);
+					    toast.show();
+					}
+
+                }
+            });
+		bt5.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if(!btu){
+                        btu=true;
+                        bt5.setText("人物穿墙[ON]");
+                        bt5.setBackgroundDrawable(ASUI.roundBG(btc2,btf,null,0));
+						Toast toast = Toast.makeText(context, "人物穿墙[开]", Toast.LENGTH_LONG);
+					    toast.show();
+					}else{
+                        btu=false;
+                        bt5.setText("人物穿墙[OFF]");
+                        bt5.setBackgroundDrawable(ASUI.roundBG(btc,btf,null,0));
+						Toast toast = Toast.makeText(context, "人物穿墙[关]", Toast.LENGTH_LONG);
+					    toast.show();
+					}
+
+                }
+            });        
+
+        return gui1_6;
+
+    };
+
+
+
+	public static void dis(){
+        mainpop.dismiss();
+
+
+	}
+    private static int W(){
+        return (int) (context.getResources().getDisplayMetrics().widthPixels);
+    }
+    private static int H(){
+        return (int) (context.getResources().getDisplayMetrics().heightPixels);
+    }
+
+}
+
